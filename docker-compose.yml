@@ -1,0 +1,34 @@
+name: gabriel-iot-challenge
+
+services:
+  camera:
+    build:
+      context: ./camera_container
+    container_name: camera_container
+    restart: always
+    ports:
+      - "5000:5000"
+    networks:
+      - web-network
+    volumes:
+      - ./camera_container:/app
+    command: flask run --debug
+
+  client:
+    depends_on:
+      - camera
+    build:
+      context: ./client_container
+    container_name: client_container
+    restart: always
+    ports:
+      - "5001:5001"
+    networks:
+      - web-network
+    volumes:
+      - ./client_container:/app
+    command: flask run --debug
+
+networks:
+  web-network:
+    driver: bridge
