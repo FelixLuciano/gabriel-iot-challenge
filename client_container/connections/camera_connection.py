@@ -6,7 +6,7 @@ from errors import NotFoundError, InternalServerError
 class CameraConnection(HttpConnection):
     BASE_URL = CAMERA_SERVICE_URL
 
-    def fetch_month(self, month: int):
+    def fetch_month(self, year: int, month: int):
         response = self.send(f"/month/{month}", "GET")
 
         if response.status_code == 404:
@@ -21,7 +21,7 @@ class CameraConnection(HttpConnection):
 
         return data.get("data")
 
-    def fetch_day(self, day: int, month: int):
+    def fetch_day(self, year: int, month: int, day: int):
         response = self.send(f"/month/{month}/day/{day}", "GET")
 
         if response.status_code == 404:
