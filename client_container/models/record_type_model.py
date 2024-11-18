@@ -6,7 +6,6 @@ from models.base_model import BaseModel
 class RecordTypeModel(BaseModel):
     __tablename__ = "RecordType"
 
-    id: Mapped[int] = mapped_column(primary_key=True, nullable=False)
     enumerator: Mapped[str] = mapped_column(unique=True, nullable=False)
 
     @staticmethod

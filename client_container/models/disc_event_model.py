@@ -6,7 +6,6 @@ from models.base_model import BaseModel
 class DiscEventModel(BaseModel):
     __tablename__ = "DiscEvent"
 
-    id: Mapped[int] = mapped_column(primary_key=True, nullable=False)
     enumerator: Mapped[str] = mapped_column(unique=True, nullable=False)
 
     @staticmethod
