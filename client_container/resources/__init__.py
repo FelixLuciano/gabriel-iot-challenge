@@ -1,1 +1,1 @@
-from resources.record import Record
+from resources.records import Records
