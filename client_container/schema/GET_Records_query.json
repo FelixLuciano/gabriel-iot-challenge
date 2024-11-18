@@ -1,0 +1,38 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "GET_Records_query",
+    "description": "Validate query parameters for Records resource GET requests.",
+    "oneOf": [
+        {
+            "type": "object",
+            "properties": {
+                "reference_start": {
+                    "type": "string",
+                    "format": "datetime"
+                },
+                "reference_end": {
+                    "type": "string",
+                    "format": "datetime"
+                }
+            },
+            "required": [
+                "reference_start",
+                "reference_end"
+            ],
+            "additionalProperties": false
+        },
+        {
+            "type": "object",
+            "properties": {
+                "reference_date": {
+                    "type": "string",
+                    "format": "date"
+                }
+            },
+            "required": [
+                "reference_date"
+            ],
+            "additionalProperties": false
+        }
+    ]
+}
