@@ -1,6 +1,7 @@
 # import logging
 
 from flask import Flask, g, jsonify
+from flask_restx import Api
 from sqlalchemy import create_engine
 
 from connections import DatabaseConnection
@@ -15,27 +16,18 @@ from resources import Records
 #     level=logging.DEBUG)
 
 app = Flask(__name__)
+api = Api(
+    app=app,
+    title='Gabriel IoT Challenge',
+    version='0.0.1',
+    doc="/docs",
+)
 
-app.db = create_engine(DB_SERVICE_URL, echo=False)
+api.db = create_engine(DB_SERVICE_URL, echo=False)
 
-records_resource = Records(app)
+api.add_namespace(Records)
 
-app.add_url_rule("/records/", view_func=records_resource.get_by_query, methods=["GET"])
-app.add_url_rule("/records/year/<int:year>", view_func=Records.as_view("RecordsOnYear", app))
-app.add_url_rule("/records/year/<int:year>/month/<int:month>", view_func=Records.as_view("RecordsOnMonth", app))
-app.add_url_rule("/records/year/<int:year>/month/<int:month>/day/<int:day>", view_func=Records.as_view("RecordsOnDay", app))
-
-@app.errorhandler(404)
-def not_found(error):
-    response ={
-        "message": error.description,
-    }
-
-    app.logger.error(f"ERROR: {error.description}")
-
-    return jsonify(response), 404
-
-@app.errorhandler(BaseError)
+@api.errorhandler(BaseError)
 def handle_exception(error: BaseError):
     response = {
         "status_code": error.status_code,
@@ -57,8 +49,8 @@ def close_connection(exception):
     db.close()
 
 def init_db():
-    BaseModel.metadata.drop_all(app.db)
-    BaseModel.metadata.create_all(app.db)
+    BaseModel.metadata.drop_all(api.db)
+    BaseModel.metadata.create_all(api.db)
 
     models = [
         DiscEventModel.create(0, "EVENT0"),
@@ -73,7 +65,7 @@ def init_db():
         RecordTypeModel.create(4, "MotionRecord"),
     ]
 
-    with DatabaseConnection(app).get_session() as session:
+    with DatabaseConnection(api).get_session() as session:
         session.add_all(models)
         session.commit()
 

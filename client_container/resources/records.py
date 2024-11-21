@@ -1,16 +1,15 @@
 import datetime
 
 from flask import request
-from flask.views import MethodView
+from flask_restx import Api, Namespace, Resource
 
 from controllers import RecordController
+from errors.base_errors import BadRequestError
 from utils.schema_handler import SchemaHandler
 
 
-class Records(MethodView):
-    query_validator = SchemaHandler("./schema/GET_Records_query.json")
-
-    def __init__(self, context):
+class RecordsPath(Resource):
+    def __init__(self, context: Api):
         self.context = context
         self.record_controller = RecordController(context)
 
@@ -25,18 +24,41 @@ class Records(MethodView):
 
         return records
 
-    def get_by_query(self):
+class RecordsQuery(Resource):
+    query_validator = SchemaHandler("./schema/GET_Records_query.json")
+
+    def __init__(self, context: Api):
+        self.context = context
+        self.record_controller = RecordController(context)
+
+    def get(self):
         params = dict(request.args)
 
-        Records.query_validator.validate(params)
+        RecordsQuery.query_validator.validate(params)
 
         if "reference_date" in params:
             reference_date = datetime.date.fromisoformat(params["reference_date"])
             records = self.record_controller.get_by_date(reference_date)
         
         elif "reference_start" in params and "reference_end" in params:
-            reference_start = datetime.datetime.fromisoformat(params["reference_start"])
-            reference_end = datetime.datetime.fromisoformat(params["reference_end"])
+            try:
+                reference_start = datetime.datetime.fromisoformat(params["reference_start"])
+                reference_end = datetime.datetime.fromisoformat(params["reference_end"])
+            except ValueError as error:
+                error_ = BadRequestError
+
+                error_.description = "\n".join(error.args)
+
+                raise error_
+
             records = self.record_controller.get_by_period(reference_start, reference_end)
 
         return records
+
+
+Records = Namespace("records", description="Read event records from the camera")
+
+Records.add_resource(RecordsQuery, "/", "/")
+Records.add_resource(RecordsPath, "/", "/year/<int:year>")
+Records.add_resource(RecordsPath, "/", "/year/<int:year>/month/<int:month>")
+Records.add_resource(RecordsPath, "/", "/year/<int:year>month/<int:month>/day/<int:day>")

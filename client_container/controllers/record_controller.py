@@ -1,6 +1,6 @@
 import datetime
 
-from flask import Flask
+from flask_restx import Api
 
 from connections import DatabaseConnection, CameraConnection
 from errors import NotFoundError
@@ -8,7 +8,7 @@ from models import RecordModel, RecordTypeModel, DiscEventModel
 
 
 class RecordController:
-    def __init__(self, context: Flask):
+    def __init__(self, context: Api):
         self.context = context
         self.database_connection = DatabaseConnection(context)
         self.camera_connection = CameraConnection(context)

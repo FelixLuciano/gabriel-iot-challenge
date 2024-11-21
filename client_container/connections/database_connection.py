@@ -1,6 +1,6 @@
 from contextlib import contextmanager
 
-from flask import Flask
+from flask_restx import Api
 from sqlalchemy.orm import Session
 
 
@@ -9,16 +9,21 @@ class DatabaseConnection:
         "expire_on_commit": False,
     }
 
-    def __init__(self, context: Flask):
+    def __init__(self, context: Api):
         self.context = context
 
     @contextmanager
     def get_session(self):
+        session = None
+
         try:
             with Session(self.context.db, **DatabaseConnection.SESSION_CONFIG) as session:
                 yield session
         except Exception as error:
             self.context.logger.fatal(error, error.args)
-            session.rollback()
+
+            if session is not None:
+                session.rollback()
         finally:
-            session.close()
+            if session is not None:
+                session.close()

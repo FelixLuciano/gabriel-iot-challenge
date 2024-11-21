@@ -17,8 +17,8 @@ class SchemaHandler:
         try:
             validate(instance, self.schema, format_checker=FormatChecker())
         except ValidationError as error:
-            new_error = BadRequestError()
+            error_ = BadRequestError()
 
-            new_error.description = error.message
+            error_.description = error.message
 
-            raise new_error
+            raise error_

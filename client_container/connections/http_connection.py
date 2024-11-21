@@ -1,10 +1,10 @@
-from flask import Flask
+from flask_restx import Api
 from requests import request, Response
 from requests.exceptions import JSONDecodeError
 
 
 class HttpConnection:
-    def __init__(self, context: Flask):
+    def __init__(self, context: Api):
         self.context = context
 
     @property
