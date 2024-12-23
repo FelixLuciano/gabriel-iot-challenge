@@ -1,16 +1,9 @@
-FROM python:3.9-slim
+FROM mockserver/mockserver:5.15.0
 
-WORKDIR /app
+WORKDIR /config
 
-COPY requirements.txt requirements.txt
+COPY . /config
 
-RUN pip install --no-cache-dir -r requirements.txt
-
-COPY . .
+ENV MOCKSERVER_PROPERTY_FILE=/config/mockserver.properties
 
 EXPOSE 5000
-
-ENV FLASK_APP=app.py
-ENV FLASK_RUN_HOST=0.0.0.0
-
-CMD ["flask", "run"]

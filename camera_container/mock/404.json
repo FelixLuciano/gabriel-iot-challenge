@@ -1,0 +1,16 @@
+[
+    {
+        "httpRequest": {
+            "path": "/.*",
+            "method": ".*"
+        },
+        "httpResponse": {
+            "statusCode": 404,
+            "body": {
+                "error": "Not Found",
+                "message": "Couldn't find  requested resource!"
+            }
+        },
+        "priority" : -1
+    }
+]
